@@ -1,0 +1,45 @@
+# Web framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-multipart==0.0.12
+
+# Database
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+pgvector==0.3.5
+
+# LLM SDKs
+openai==1.57.2
+anthropic==0.40.0
+dashscope==1.20.11
+
+# RAG & Embeddings
+langchain==0.3.9
+langchain-openai==0.2.11
+langchain-community==0.3.9
+langchain-text-splitters==0.3.2
+faiss-cpu==1.9.0
+
+# RAGAS Evaluation
+ragas==0.2.6
+datasets==3.1.0
+
+# Document processing
+pypdf==5.1.0
+python-docx==1.1.2
+unstructured==0.16.10
+
+# Task queue
+celery==5.4.0
+redis==5.2.1
+flower==2.0.1
+
+# Utilities
+pydantic==2.10.3
+pydantic-settings==2.6.1
+httpx==0.28.1
+python-dotenv==1.0.1
+numpy==1.26.4
+pandas==2.2.3
+tenacity==9.0.0
