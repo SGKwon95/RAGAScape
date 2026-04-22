@@ -38,8 +38,6 @@ export function Sidebar() {
       {/* Quick nav */}
       <div className="mt-1 px-1.5 space-y-px">
         <NavItem icon={<SearchIcon />} label="Search" shortcut="⌘K" />
-        <NavItem icon={<UpdatesIcon />} label="Updates" />
-        <NavItem icon={<SettingsIcon />} label="Settings & members" />
       </div>
 
       {/* Divider */}
@@ -79,26 +77,9 @@ function WorkspaceHeader() {
           R
         </div>
         <span className="flex-1 truncate text-sm font-semibold text-notion-text">
-          RAGAScape
+          AideNote
         </span>
       </button>
-
-      {/* User row */}
-      <div className="mt-0.5 flex items-center gap-2 rounded-notion px-2 py-1 hover:bg-notion-hover transition-colors cursor-pointer">
-        {/* Avatar */}
-        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-blue-400 text-[11px] font-semibold text-white">
-          S
-        </div>
-        <span className="flex-1 truncate text-xs text-notion-text-2">
-          SGKwon95
-        </span>
-        <button
-          className="rounded-notion p-0.5 text-notion-text-3 hover:bg-notion-divider hover:text-notion-text-2 transition-colors"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <DotsIcon size={13} />
-        </button>
-      </div>
     </div>
   );
 }
@@ -231,38 +212,6 @@ function SearchIcon() {
   );
 }
 
-function UpdatesIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path
-        d="M7 1.5C4 1.5 1.5 4 1.5 7c0 1.5.6 2.9 1.5 3.9v1.6h1.6C5.6 13.3 6.3 13.5 7 13.5c3 0 5.5-2.5 5.5-5.5S10 1.5 7 1.5z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-      />
-      <path
-        d="M4.5 7h5M7 4.5v5"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function SettingsIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.2" />
-      <path
-        d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.6 2.6l1.1 1.1M10.3 10.3l1.1 1.1M2.6 11.4l1.1-1.1M10.3 3.7l1.1-1.1"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function PlusIcon({ size = 14 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
@@ -282,32 +231,6 @@ function DotsIcon({ size = 14 }: { size?: number }) {
       <circle cx="3.5" cy="7" r="1" fill="currentColor" />
       <circle cx="7" cy="7" r="1" fill="currentColor" />
       <circle cx="10.5" cy="7" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function ChevronDown({
-  size = 14,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 14 14"
-      fill="none"
-      className={className}
-    >
-      <path
-        d="M3 5l4 4 4-4"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }
