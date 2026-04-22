@@ -39,34 +39,82 @@ export function FileUpload({ onUploaded }: Props) {
   );
 
   return (
-    <div
-      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={onDrop}
-      className={`mx-auto flex max-w-xl cursor-pointer flex-col items-center gap-4 rounded-2xl border-2 border-dashed p-12 text-center transition ${
-        dragging ? "border-brand-500 bg-brand-50" : "border-gray-300 hover:border-brand-400"
-      }`}
-    >
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-600 text-2xl">
-        📄
-      </div>
-      <div>
-        <p className="font-semibold text-gray-700">Drag &amp; drop a PDF or text file</p>
-        <p className="text-sm text-gray-400">or click to browse</p>
-      </div>
+    <div className="space-y-3">
+      <h2 className="text-base font-semibold text-notion-text">Upload document</h2>
 
-      <label className="cursor-pointer rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 transition">
-        {loading ? "Uploading…" : "Select file"}
+      <label
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={onDrop}
+        className={`group flex cursor-pointer flex-col items-center gap-3 rounded-notion border px-8 py-12 text-center transition-colors duration-75 ${
+          loading
+            ? "pointer-events-none opacity-60 border-notion-border"
+            : dragging
+            ? "border-notion-blue bg-notion-blue-bg"
+            : "border-notion-border hover:border-notion-divider hover:bg-notion-hover"
+        }`}
+      >
+        {/* Icon */}
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-notion border transition-colors ${
+            dragging
+              ? "border-notion-blue bg-white"
+              : "border-notion-border bg-white group-hover:border-notion-divider"
+          }`}
+        >
+          {loading ? (
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-notion-border border-t-notion-blue" />
+          ) : (
+            <FileIcon />
+          )}
+        </div>
+
+        <div>
+          <p className="text-sm font-medium text-notion-text-2">
+            {loading
+              ? "Uploading…"
+              : dragging
+              ? "Drop file to upload"
+              : "Drag a file here, or click to browse"}
+          </p>
+          <p className="mt-0.5 text-xs text-notion-text-3">
+            Supports PDF, TXT, MD
+          </p>
+        </div>
+
         <input
           type="file"
           accept=".pdf,.txt,.md"
           className="hidden"
           disabled={loading}
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleFile(f);
+          }}
         />
       </label>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <div className="flex items-center gap-2 rounded-notion border border-notion-red/30 bg-notion-red-bg px-3 py-2 text-sm text-notion-red">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M6.5 3.5V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            <circle cx="6.5" cy="9.2" r="0.7" fill="currentColor" />
+          </svg>
+          {error}
+        </div>
+      )}
     </div>
+  );
+}
+
+function FileIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-notion-text-3">
+      <rect x="2" y="1.5" width="10" height="13" rx="1" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M12 1.5l3.5 3.5V15a1 1 0 01-1 1H5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <path d="M12 1.5v3.5h3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 8h6M5 11h4" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+    </svg>
   );
 }

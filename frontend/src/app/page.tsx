@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PageHeader } from "@/components/PageHeader";
 import { FileUpload } from "@/components/FileUpload";
 import { JobDashboard } from "@/components/JobDashboard";
 import type { JobStatusResponse, TaskType } from "@/lib/api";
@@ -25,7 +26,10 @@ export default function HomePage() {
     setError(null);
     setStep("processing");
     try {
-      const { job_id } = await api.startGeneration({ document_id: documentId, task_type: taskType });
+      const { job_id } = await api.startGeneration({
+        document_id: documentId,
+        task_type: taskType,
+      });
       const result = await api.pollJob(job_id);
       setJobResult(result);
       setStep("done");
@@ -36,58 +40,171 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-10">
-      <section className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800">Document Intelligence</h1>
-        <p className="mt-2 text-gray-500">
-          Upload a PDF or text file — get summaries &amp; quizzes from GPT, Claude, and Qwen, then compare them with RAGAS.
-        </p>
-      </section>
+    <div className="min-h-full pb-20">
+      {/* Cover + icon + title */}
+      <PageHeader defaultIcon="📄" defaultTitle="RAG Evaluation" />
 
-      {/* Step 1: Upload */}
-      {step === "upload" && <FileUpload onUploaded={handleUpload} />}
+      {/* Page body */}
+      <div className="mx-auto max-w-3xl px-16 pt-8">
+        {/* ── Properties table ─────────────────────── */}
+        <div className="mb-8 space-y-0.5">
+          <PropRow label="Status">
+            <StatusBadge step={step} />
+          </PropRow>
+          <PropRow label="Task">
+            <span className="text-sm text-notion-text-2">
+              {taskType === "summary" ? "Summarise" : "Quiz"}
+            </span>
+          </PropRow>
+          <PropRow label="Models">
+            <div className="flex gap-1.5">
+              {["GPT-4o mini", "Claude Haiku", "Qwen Plus"].map((m) => (
+                <span
+                  key={m}
+                  className="rounded-notion bg-notion-hover px-2 py-0.5 text-xs text-notion-text-2"
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
+          </PropRow>
+          <PropRow label="Metrics">
+            <span className="text-sm text-notion-text-3">
+              Faithfulness · Relevancy · Precision · Recall
+            </span>
+          </PropRow>
+        </div>
 
-      {/* Step 2: Configure */}
-      {(step === "configure" || error) && (
-        <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold">Choose task</h2>
-          <div className="flex gap-4">
-            {(["summary", "quiz"] as TaskType[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTaskType(t)}
-                className={`flex-1 rounded-xl border px-4 py-3 text-sm font-medium transition ${
-                  taskType === t
-                    ? "border-brand-500 bg-brand-50 text-brand-600"
-                    : "border-gray-200 hover:border-brand-300"
-                }`}
-              >
-                {t === "summary" ? "Summarise" : "Quiz"}
-              </button>
-            ))}
+        {/* ── Divider ──────────────────────────────── */}
+        <div className="mb-8 border-t border-notion-border" />
+
+        {/* ── Step 1: Upload ───────────────────────── */}
+        {step === "upload" && <FileUpload onUploaded={handleUpload} />}
+
+        {/* ── Step 2: Configure ────────────────────── */}
+        {step === "configure" && (
+          <div className="space-y-5">
+            <BlockHeading>Choose task type</BlockHeading>
+            <div className="flex gap-2">
+              {(["summary", "quiz"] as TaskType[]).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTaskType(t)}
+                  className={`flex items-center gap-2 rounded-notion border px-4 py-2.5 text-sm transition-colors duration-75 ${
+                    taskType === t
+                      ? "border-notion-blue bg-notion-blue-bg text-notion-blue font-medium"
+                      : "border-notion-border text-notion-text-2 hover:bg-notion-hover"
+                  }`}
+                >
+                  <span>{t === "summary" ? "📝" : "🎯"}</span>
+                  {t === "summary" ? "Summarise" : "Quiz"}
+                </button>
+              ))}
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 rounded-notion border border-notion-red/30 bg-notion-red-bg px-3 py-2.5 text-sm text-notion-red">
+                <span>⚠️</span>
+                {error}
+              </div>
+            )}
+
+            <button onClick={handleStart} className="n-btn-primary">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M3 2l8 4.5L3 11V2z" fill="currentColor" />
+              </svg>
+              Run all 3 models
+            </button>
           </div>
-          {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-          <button
-            onClick={handleStart}
-            className="mt-6 w-full rounded-xl bg-brand-600 px-6 py-3 text-white font-semibold hover:bg-brand-500 transition"
-          >
-            Run all 3 models
-          </button>
-        </div>
-      )}
+        )}
 
-      {/* Step 3: Processing */}
-      {step === "processing" && (
-        <div className="flex flex-col items-center gap-4 py-16">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
-          <p className="text-gray-500">Running GPT, Claude, and Qwen in parallel...</p>
-        </div>
-      )}
+        {/* ── Step 3: Processing ───────────────────── */}
+        {step === "processing" && (
+          <div className="space-y-4">
+            <BlockHeading>Running models…</BlockHeading>
+            <div className="rounded-notion border border-notion-border p-4">
+              <div className="flex items-center gap-3">
+                <Spinner />
+                <div>
+                  <p className="text-sm text-notion-text">
+                    Running GPT-4o mini, Claude Haiku, and Qwen Plus in parallel
+                  </p>
+                  <p className="mt-0.5 text-xs text-notion-text-3">
+                    This usually takes 15–30 seconds
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-1">
+              {[
+                { name: "GPT-4o mini", color: "border-t-notion-green" },
+                { name: "Claude Haiku", color: "border-t-notion-orange" },
+                { name: "Qwen Plus", color: "border-t-notion-blue" },
+              ].map((m) => (
+                <div
+                  key={m.name}
+                  className="flex items-center gap-3 rounded-notion px-3 py-2 text-sm text-notion-text-2 hover:bg-notion-hover"
+                >
+                  <div
+                    className={`h-3.5 w-3.5 flex-shrink-0 animate-spin rounded-full border-2 border-notion-border ${m.color}`}
+                  />
+                  {m.name}
+                  <span className="ml-auto text-xs text-notion-text-3">In progress</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-      {/* Step 4: Results */}
-      {step === "done" && jobResult && (
-        <JobDashboard job={jobResult} onReset={() => { setStep("upload"); setJobResult(null); setDocumentId(null); }} />
-      )}
+        {/* ── Step 4: Results ──────────────────────── */}
+        {step === "done" && jobResult && (
+          <JobDashboard
+            job={jobResult}
+            onReset={() => {
+              setStep("upload");
+              setJobResult(null);
+              setDocumentId(null);
+            }}
+          />
+        )}
+      </div>
     </div>
+  );
+}
+
+/* ─── Helpers ────────────────────────────────────────── */
+function PropRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex min-h-[28px] items-center gap-2">
+      <span className="w-28 flex-shrink-0 text-xs text-notion-text-3">{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function StatusBadge({ step }: { step: Step }) {
+  const map: Record<Step, { label: string; cls: string }> = {
+    upload:     { label: "Not started",  cls: "bg-notion-hover text-notion-text-3" },
+    configure:  { label: "Configuring",  cls: "bg-notion-blue-bg text-notion-blue" },
+    processing: { label: "Processing…",  cls: "bg-notion-orange-bg text-notion-orange" },
+    done:       { label: "Completed",    cls: "bg-notion-green-bg text-notion-green" },
+  };
+  const { label, cls } = map[step];
+  return (
+    <span className={`rounded-notion px-2 py-0.5 text-xs font-medium ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
+function BlockHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-base font-semibold text-notion-text">{children}</h2>
+  );
+}
+
+function Spinner() {
+  return (
+    <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-notion-border border-t-notion-blue" />
   );
 }

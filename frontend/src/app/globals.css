@@ -1,3 +1,89 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    color: #37352f;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
+  *:hover::-webkit-scrollbar-thumb { background: #d9d9d7; }
+  ::-webkit-scrollbar-thumb:hover { background: #9b9a97 !important; }
+}
+
+/* ── Reusable component classes (raw CSS, no @apply) ─── */
+@layer components {
+  /* Ghost button */
+  .n-btn {
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    gap: 6px;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #787672;
+    transition: background-color 75ms;
+  }
+  .n-btn:hover { background-color: #ebebea; }
+  .n-btn:active { background-color: #d9d9d7; }
+
+  /* Primary button */
+  .n-btn-primary {
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    gap: 6px;
+    border-radius: 3px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #2383e2;
+    transition: background-color 75ms;
+  }
+  .n-btn-primary:hover { background-color: #1a75d1; }
+  .n-btn-primary:active { background-color: #1468be; }
+  .n-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Sidebar nav item */
+  .n-nav-item {
+    display: flex;
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    gap: 6px;
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #787672;
+    transition: background-color 75ms;
+  }
+  .n-nav-item:hover { background-color: #ebebea; }
+
+  /* Sidebar nav item — active */
+  .n-nav-item-active {
+    background-color: #ebebea;
+    color: #37352f;
+    font-weight: 500;
+  }
+}
