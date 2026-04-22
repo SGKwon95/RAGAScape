@@ -29,15 +29,16 @@ const PAGES: Page[] = [
 
 const MENUS: Menu[] = [
   { id: "1", emoji: "🗂️", title: "문서 관리" },
-  { id: "2", emoji: "📄", title: "RAG Evaluation" },
+  { id: "2", emoji: "❓", title: "퀴즈 관리" },
+  { id: "3", emoji: "📄", title: "RAG Evaluation" },
   {
-    id: "3",
+    id: "4",
     emoji: "📊",
     title: "Model Benchmarks",
     children: [
-      { id: "3-1", emoji: "📈", title: "GPT Performance" },
-      { id: "3-2", emoji: "🤖", title: "Claude Results" },
-      { id: "3-3", emoji: "🌐", title: "Qwen Analysis" },
+      { id: "4-1", emoji: "📈", title: "GPT Performance" },
+      { id: "4-2", emoji: "🤖", title: "Claude Results" },
+      { id: "4-3", emoji: "🌐", title: "Qwen Analysis" },
     ],
   },
 ];
@@ -51,7 +52,7 @@ export function Sidebar() {
 
       {/* Quick nav */}
       <div className="mt-1 px-1.5 space-y-px">
-        <NavItem icon={<SearchIcon />} label="Search" shortcut="⌘K" />
+        <NavItem icon={<SearchIcon />} label="Search" />
         <NavItem icon={<HomeIcon />} label="Home" />
       </div>
 
@@ -59,7 +60,7 @@ export function Sidebar() {
       <Divider />
 
       {/* Menu */}
-      <div className="flex-1 overflow-y-auto px-1.5 pb-2">
+      <div className="overflow-y-auto px-1.5 pb-2">
         <SectionLabel label="Menu" />
         {MENUS.map((menu) => (
           <MenuItem key={menu.id} menu={menu} depth={0} />
