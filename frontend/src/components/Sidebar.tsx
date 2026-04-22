@@ -8,24 +8,38 @@ interface Page {
   emoji: string;
   title: string;
   active?: boolean;
+}
+
+interface Menu {
+  id: string;
+  emoji: string;
+  title: string;
+  active?: boolean;
   children?: Page[];
 }
 
 /* ─── Dummy data ─────────────────────────────────────── */
 const PAGES: Page[] = [
-  { id: "1", emoji: "📄", title: "RAG Evaluation", active: true },
   {
-    id: "2",
+    id: "1",
+    emoji: "📃",
+    title: "개인 페이지",
+  },
+];
+
+const MENUS: Menu[] = [
+  { id: "1", emoji: "🗂️", title: "문서 관리" },
+  { id: "2", emoji: "📄", title: "RAG Evaluation" },
+  {
+    id: "3",
     emoji: "📊",
     title: "Model Benchmarks",
     children: [
-      { id: "2-1", emoji: "📈", title: "GPT Performance" },
-      { id: "2-2", emoji: "🤖", title: "Claude Results" },
-      { id: "2-3", emoji: "🌐", title: "Qwen Analysis" },
+      { id: "3-1", emoji: "📈", title: "GPT Performance" },
+      { id: "3-2", emoji: "🤖", title: "Claude Results" },
+      { id: "3-3", emoji: "🌐", title: "Qwen Analysis" },
     ],
   },
-  { id: "3", emoji: "📝", title: "Research Notes" },
-  { id: "4", emoji: "🗂️", title: "Document Library" },
 ];
 
 /* ─── Sidebar root ───────────────────────────────────── */
@@ -38,10 +52,19 @@ export function Sidebar() {
       {/* Quick nav */}
       <div className="mt-1 px-1.5 space-y-px">
         <NavItem icon={<SearchIcon />} label="Search" shortcut="⌘K" />
+        <NavItem icon={<HomeIcon />} label="Home" />
       </div>
 
       {/* Divider */}
       <Divider />
+
+      {/* Menu */}
+      <div className="flex-1 overflow-y-auto px-1.5 pb-2">
+        <SectionLabel label="Menu" />
+        {MENUS.map((menu) => (
+          <MenuItem key={menu.id} menu={menu} depth={0} />
+        ))}
+      </div>
 
       {/* Pages */}
       <div className="flex-1 overflow-y-auto px-1.5 pb-2">
@@ -74,7 +97,7 @@ function WorkspaceHeader() {
         className="flex w-full items-center gap-2 rounded-notion px-2 py-1.5 hover:bg-notion-hover transition-colors"
       >
         <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] bg-notion-text text-white text-[11px] font-bold">
-          R
+          A
         </div>
         <span className="flex-1 truncate text-sm font-semibold text-notion-text">
           AideNote
@@ -88,7 +111,6 @@ function WorkspaceHeader() {
 function PageItem({ page, depth }: { page: Page; depth: number }) {
   const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const hasChildren = !!page.children?.length;
 
   return (
     <div>
@@ -127,7 +149,7 @@ function PageItem({ page, depth }: { page: Page; depth: number }) {
         {/* Emoji + Title */}
         <button
           className="flex flex-1 items-center gap-1.5 overflow-hidden py-[5px] pr-1 text-sm text-notion-text-2 hover:text-notion-text transition-colors"
-          onClick={() => hasChildren && setExpanded((v) => !v)}
+          onClick={() => {}}
         >
           <span className="text-base leading-none">{page.emoji}</span>
           <span className="truncate">{page.title}</span>
@@ -151,12 +173,65 @@ function PageItem({ page, depth }: { page: Page; depth: number }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ─── MenuItem ───────────────────────────────────────── */
+function MenuItem({ menu, depth }: { menu: Menu; depth: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const hasChildren = !!menu.children?.length;
+
+  return (
+    <div>
+      <div
+        className={`group relative flex items-center rounded-notion ${
+          menu.active ? "n-nav-item-active bg-notion-hover" : ""
+        }`}
+        style={{ paddingLeft: depth * 12 + 4 }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {/* Chevron toggle */}
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-notion text-notion-text-3 transition-all hover:bg-notion-divider hover:text-notion-text-2 ${
+            hovered || expanded ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            className={`transition-transform duration-150 ${expanded ? "rotate-90" : ""}`}
+          >
+            <path
+              d="M3 2l4 3-4 3"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
+        {/* Emoji + Title */}
+        <button
+          className="flex flex-1 items-center gap-1.5 overflow-hidden py-[5px] pr-1 text-sm text-notion-text-2 hover:text-notion-text transition-colors"
+          onClick={() => hasChildren && setExpanded((v) => !v)}
+        >
+          <span className="text-base leading-none">{menu.emoji}</span>
+          <span className="truncate">{menu.title}</span>
+        </button>
+      </div>
 
       {/* Children */}
       {expanded && hasChildren && (
         <div>
-          {page.children!.map((child) => (
-            <PageItem key={child.id} page={child} depth={depth + 1} />
+          {menu.children!.map((child) => (
+            <MenuItem key={child.id} menu={child} depth={depth + 1} />
           ))}
         </div>
       )}
@@ -198,6 +273,19 @@ function Divider() {
 }
 
 /* ─── SVG Icons ──────────────────────────────────────── */
+function HomeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path
+        d="M1.5 6.5L7 1.5l5.5 5v6a.5.5 0 01-.5.5H9V9.5H5V13H2a.5.5 0 01-.5-.5v-6z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function SearchIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
