@@ -28,7 +28,12 @@ const PAGES: Page[] = [
 ];
 
 const MENUS: Menu[] = [
-  { id: "1", emoji: "🗂️", title: "문서 관리" },
+  {
+    id: "1",
+    emoji: "🗂️",
+    title: "문서 관리",
+    children: [{ id: "1-1", emoji: "📩", title: "문서 업로드" }],
+  },
   { id: "2", emoji: "❓", title: "퀴즈 관리" },
   { id: "3", emoji: "📄", title: "RAG Evaluation" },
   {
@@ -195,28 +200,32 @@ function MenuItem({ menu, depth }: { menu: Menu; depth: number }) {
         onMouseLeave={() => setHovered(false)}
       >
         {/* Chevron toggle */}
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-notion text-notion-text-3 transition-all hover:bg-notion-divider hover:text-notion-text-2 ${
-            hovered || expanded ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            className={`transition-transform duration-150 ${expanded ? "rotate-90" : ""}`}
+        {hasChildren ? (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-notion text-notion-text-3 transition-all hover:bg-notion-divider hover:text-notion-text-2 ${
+              hovered || expanded ? "opacity-100" : "opacity-0"
+            }`}
           >
-            <path
-              d="M3 2l4 3-4 3"
-              stroke="currentColor"
-              strokeWidth="1.3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              className={`transition-transform duration-150 ${expanded ? "rotate-90" : ""}`}
+            >
+              <path
+                d="M3 2l4 3-4 3"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        ) : (
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        )}
 
         {/* Emoji + Title */}
         <button
