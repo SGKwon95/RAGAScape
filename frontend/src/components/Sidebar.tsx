@@ -1,21 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { UploadModal } from "@/components/UploadModal";
 
 /* ─── Types ─────────────────────────────────────────── */
-interface Page {
+interface MenuItem_ {
   id: string;
   emoji: string;
   title: string;
   active?: boolean;
+  action?: string;
 }
 
-interface Menu {
-  id: string;
-  emoji: string;
-  title: string;
-  active?: boolean;
-  children?: Page[];
+interface Page extends MenuItem_ {}
+
+interface Menu extends MenuItem_ {
+  children?: MenuItem_[];
 }
 
 /* ─── Dummy data ─────────────────────────────────────── */
@@ -32,7 +32,7 @@ const MENUS: Menu[] = [
     id: "1",
     emoji: "🗂️",
     title: "문서 관리",
-    children: [{ id: "1-1", emoji: "📩", title: "문서 업로드" }],
+    children: [{ id: "1-1", emoji: "📩", title: "문서 업로드", action: "upload" }],
   },
   { id: "2", emoji: "❓", title: "퀴즈 관리" },
   { id: "3", emoji: "📄", title: "RAG Evaluation" },
@@ -50,8 +50,14 @@ const MENUS: Menu[] = [
 
 /* ─── Sidebar root ───────────────────────────────────── */
 export function Sidebar() {
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+
   return (
     <div className="flex h-full flex-col overflow-hidden bg-notion-sidebar select-none">
+      <UploadModal
+        open={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+      />
       {/* Workspace / profile header */}
       <WorkspaceHeader />
 
@@ -68,7 +74,14 @@ export function Sidebar() {
       <div className="overflow-y-auto px-1.5 pb-2">
         <SectionLabel label="Menu" />
         {MENUS.map((menu) => (
-          <MenuItem key={menu.id} menu={menu} depth={0} />
+          <MenuItem
+            key={menu.id}
+            menu={menu}
+            depth={0}
+            onAction={(action) => {
+              if (action === "upload") setUploadModalOpen(true);
+            }}
+          />
         ))}
       </div>
 
@@ -184,10 +197,26 @@ function PageItem({ page, depth }: { page: Page; depth: number }) {
 }
 
 /* ─── MenuItem ───────────────────────────────────────── */
-function MenuItem({ menu, depth }: { menu: Menu; depth: number }) {
+function MenuItem({
+  menu,
+  depth,
+  onAction,
+}: {
+  menu: Menu;
+  depth: number;
+  onAction?: (action: string) => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState(false);
   const hasChildren = !!menu.children?.length;
+
+  const handleClick = () => {
+    if (hasChildren) {
+      setExpanded((v) => !v);
+    } else if (menu.action) {
+      onAction?.(menu.action);
+    }
+  };
 
   return (
     <div>
@@ -224,13 +253,13 @@ function MenuItem({ menu, depth }: { menu: Menu; depth: number }) {
             </svg>
           </button>
         ) : (
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+          <span className="w-5 flex-shrink-0" />
         )}
 
         {/* Emoji + Title */}
         <button
           className="flex flex-1 items-center gap-1.5 overflow-hidden py-[5px] pr-1 text-sm text-notion-text-2 hover:text-notion-text transition-colors"
-          onClick={() => hasChildren && setExpanded((v) => !v)}
+          onClick={handleClick}
         >
           <span className="text-base leading-none">{menu.emoji}</span>
           <span className="truncate">{menu.title}</span>
@@ -241,7 +270,7 @@ function MenuItem({ menu, depth }: { menu: Menu; depth: number }) {
       {expanded && hasChildren && (
         <div>
           {menu.children!.map((child) => (
-            <MenuItem key={child.id} menu={child} depth={depth + 1} />
+            <MenuItem key={child.id} menu={child} depth={depth + 1} onAction={onAction} />
           ))}
         </div>
       )}

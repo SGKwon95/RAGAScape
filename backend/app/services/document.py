@@ -5,7 +5,7 @@ import uuid
 from pathlib import Path
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pypdf import PdfReader
+import pdfplumber
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -73,8 +73,13 @@ class DocumentService:
 
     def _extract_text(self, path: Path, content_type: str) -> str:
         if content_type == "application/pdf" or path.suffix.lower() == ".pdf":
-            reader = PdfReader(str(path))
-            return "\n".join(page.extract_text() or "" for page in reader.pages)
+            with pdfplumber.open(str(path)) as pdf:
+                pages = []
+                for page in pdf.pages:
+                    text = page.extract_text(x_tolerance=2, y_tolerance=2)
+                    if text:
+                        pages.append(text)
+            return "\n".join(pages)
         return path.read_text(encoding="utf-8", errors="replace")
 
     async def _create_chunks(self, document: Document, text: str) -> list[DocumentChunk]:

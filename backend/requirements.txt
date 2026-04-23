@@ -26,7 +26,7 @@ ragas==0.2.6
 datasets==3.1.0
 
 # Document processing
-pypdf==5.1.0
+pdfplumber==0.11.4
 python-docx==1.1.2
 unstructured==0.16.10
 
