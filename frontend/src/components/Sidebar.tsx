@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { UploadModal } from "@/components/UploadModal";
 
 /* ─── Types ─────────────────────────────────────────── */
@@ -10,6 +11,7 @@ interface MenuItem_ {
   title: string;
   active?: boolean;
   action?: string;
+  href?: string;
 }
 
 interface Page extends MenuItem_ {}
@@ -32,9 +34,16 @@ const MENUS: Menu[] = [
     id: "1",
     emoji: "🗂️",
     title: "문서 관리",
-    children: [{ id: "1-1", emoji: "📩", title: "문서 업로드", action: "upload" }],
+    children: [
+      { id: "1-1", emoji: "📩", title: "문서 업로드", action: "upload" },
+    ],
   },
-  { id: "2", emoji: "❓", title: "퀴즈 관리" },
+  {
+    id: "2",
+    emoji: "❓",
+    title: "퀴즈 관리",
+    children: [{ id: "2-1", emoji: "💯", title: "퀴즈 풀기", href: "/quiz" }],
+  },
   { id: "3", emoji: "📄", title: "RAG Evaluation" },
   {
     id: "4",
@@ -51,6 +60,16 @@ const MENUS: Menu[] = [
 /* ─── Sidebar root ───────────────────────────────────── */
 export function Sidebar() {
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleAction = (action: string, href?: string) => {
+    if (action === "upload") {
+      setUploadModalOpen(true);
+    } else if (href) {
+      router.push(href);
+    }
+  };
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-notion-sidebar select-none">
@@ -78,9 +97,8 @@ export function Sidebar() {
             key={menu.id}
             menu={menu}
             depth={0}
-            onAction={(action) => {
-              if (action === "upload") setUploadModalOpen(true);
-            }}
+            pathname={pathname}
+            onAction={handleAction}
           />
         ))}
       </div>
@@ -200,21 +218,30 @@ function PageItem({ page, depth }: { page: Page; depth: number }) {
 function MenuItem({
   menu,
   depth,
+  pathname,
   onAction,
 }: {
   menu: Menu;
   depth: number;
-  onAction?: (action: string) => void;
+  pathname: string;
+  onAction?: (action: string, href?: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const hasChildren = !!menu.children?.length;
+  const isActive = !hasChildren && !!menu.href && pathname.startsWith(menu.href);
+  const [expanded, setExpanded] = useState(isActive);
+  const [hovered, setHovered] = useState(false);
+
+  // Auto-expand parent if a child is active
+  const hasActiveChild = hasChildren && menu.children!.some(
+    (c) => c.href && pathname.startsWith(c.href)
+  );
+  const [wasAutoExpanded] = useState(hasActiveChild);
 
   const handleClick = () => {
     if (hasChildren) {
       setExpanded((v) => !v);
-    } else if (menu.action) {
-      onAction?.(menu.action);
+    } else {
+      onAction?.(menu.action ?? "", menu.href);
     }
   };
 
@@ -222,7 +249,7 @@ function MenuItem({
     <div>
       <div
         className={`group relative flex items-center rounded-notion ${
-          menu.active ? "n-nav-item-active bg-notion-hover" : ""
+          isActive ? "bg-notion-active" : ""
         }`}
         style={{ paddingLeft: depth * 12 + 4 }}
         onMouseEnter={() => setHovered(true)}
@@ -233,7 +260,7 @@ function MenuItem({
           <button
             onClick={() => setExpanded((v) => !v)}
             className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-notion text-notion-text-3 transition-all hover:bg-notion-divider hover:text-notion-text-2 ${
-              hovered || expanded ? "opacity-100" : "opacity-0"
+              hovered || expanded || wasAutoExpanded ? "opacity-100" : "opacity-0"
             }`}
           >
             <svg
@@ -241,7 +268,7 @@ function MenuItem({
               height="10"
               viewBox="0 0 10 10"
               fill="none"
-              className={`transition-transform duration-150 ${expanded ? "rotate-90" : ""}`}
+              className={`transition-transform duration-150 ${expanded || wasAutoExpanded ? "rotate-90" : ""}`}
             >
               <path
                 d="M3 2l4 3-4 3"
@@ -258,7 +285,9 @@ function MenuItem({
 
         {/* Emoji + Title */}
         <button
-          className="flex flex-1 items-center gap-1.5 overflow-hidden py-[5px] pr-1 text-sm text-notion-text-2 hover:text-notion-text transition-colors"
+          className={`flex flex-1 items-center gap-1.5 overflow-hidden py-[5px] pr-1 text-sm transition-colors hover:text-notion-text ${
+            isActive ? "font-medium text-notion-text" : "text-notion-text-2"
+          }`}
           onClick={handleClick}
         >
           <span className="text-base leading-none">{menu.emoji}</span>
@@ -267,10 +296,16 @@ function MenuItem({
       </div>
 
       {/* Children */}
-      {expanded && hasChildren && (
+      {(expanded || wasAutoExpanded) && hasChildren && (
         <div>
           {menu.children!.map((child) => (
-            <MenuItem key={child.id} menu={child} depth={depth + 1} onAction={onAction} />
+            <MenuItem
+              key={child.id}
+              menu={child}
+              depth={depth + 1}
+              pathname={pathname}
+              onAction={onAction}
+            />
           ))}
         </div>
       )}

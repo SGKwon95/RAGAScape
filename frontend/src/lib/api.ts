@@ -8,6 +8,14 @@ export type TaskType = "summary" | "quiz";
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
 export type ModelProvider = "gpt" | "claude" | "qwen";
 
+export interface DocumentItem {
+  id: string;
+  filename: string;
+  file_size: number;
+  chunk_count: number;
+  created_at: string;
+}
+
 export interface UploadResponse {
   document_id: string;
   filename: string;
@@ -77,6 +85,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  listDocuments: (): Promise<DocumentItem[]> =>
+    request("/api/v1/documents"),
+
   uploadDocument: async (file: File): Promise<UploadResponse> => {
     const form = new FormData();
     form.append("file", file);

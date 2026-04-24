@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import upload, generate, evaluate, status
+from app.api.routes import upload, generate, evaluate, status, documents
 from app.config import settings
 from app.models.database import create_tables
 
@@ -33,6 +33,7 @@ app.include_router(upload.router, prefix="/api/v1/upload", tags=["Upload"])
 app.include_router(generate.router, prefix="/api/v1/generate", tags=["Generate"])
 app.include_router(evaluate.router, prefix="/api/v1/evaluate", tags=["Evaluate"])
 app.include_router(status.router, prefix="/api/v1/status", tags=["Status"])
+app.include_router(documents.router, prefix="/api/v1/documents", tags=["Documents"])
 
 
 @app.get("/health")
