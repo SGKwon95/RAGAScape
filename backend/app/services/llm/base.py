@@ -94,6 +94,7 @@ class BaseLLM(ABC):
     def _quiz_prompt(self, context: str, num_questions: int) -> str:
         return (
             f"You are an expert quiz creator. Read the context and create {num_questions} multiple-choice questions.\n\n"
+            "IMPORTANT: You MUST write ALL text (questions, options, explanations) in KOREAN (한국어). No exceptions.\n\n"
             "Respond ONLY with valid JSON matching this schema:\n"
             '{"questions": [{"question": "string", "options": ["A. ...", "B. ...", "C. ...", "D. ..."], '
             '"correct_answer": "A"|"B"|"C"|"D", "explanation": "string"}], "total_questions": number}\n\n'
