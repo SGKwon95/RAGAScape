@@ -58,7 +58,7 @@ class ProcessingJob(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     document_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("documents.id"), nullable=False)
-    status: Mapped[JobStatus] = mapped_column(Enum(JobStatus, create_type=False), default=JobStatus.PENDING)
+    status: Mapped[JobStatus] = mapped_column(Enum(JobStatus, name="job_status", create_type=False), default=JobStatus.PENDING)
     task_type: Mapped[str] = mapped_column(String(50), nullable=False)  # "summary" | "quiz"
     error_message: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
@@ -74,7 +74,7 @@ class GenerationResult(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     job_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("processing_jobs.id"), nullable=False)
-    model_provider: Mapped[ModelProvider] = mapped_column(Enum(ModelProvider, create_type=False), nullable=False)
+    model_provider: Mapped[ModelProvider] = mapped_column(Enum(ModelProvider, name="model_provider", create_type=False), nullable=False)
     model_name: Mapped[str] = mapped_column(String(100), nullable=False)
     task_type: Mapped[str] = mapped_column(String(50), nullable=False)
     output: Mapped[dict] = mapped_column(JSON, nullable=False)
@@ -93,7 +93,7 @@ class EvaluationResult(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     job_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("processing_jobs.id"), nullable=False)
     generation_result_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("generation_results.id"), nullable=False)
-    model_provider: Mapped[ModelProvider] = mapped_column(Enum(ModelProvider, create_type=False), nullable=False)
+    model_provider: Mapped[ModelProvider] = mapped_column(Enum(ModelProvider, name="model_provider", create_type=False), nullable=False)
 
     # RAGAS metrics
     faithfulness: Mapped[float | None] = mapped_column(Float)
