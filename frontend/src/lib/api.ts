@@ -6,7 +6,19 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export type TaskType = "summary" | "quiz";
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
-export type ModelProvider = "gpt" | "claude" | "qwen";
+export type ModelProvider = "gpt" | "claude" | "qwen" | "gemini";
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];      // ["A. ...", "B. ...", "C. ...", "D. ..."]
+  correct_answer: string; // "A" | "B" | "C" | "D"
+  explanation: string;
+}
+
+export interface QuizOutput {
+  questions: QuizQuestion[];
+  total_questions: number;
+}
 
 export interface DocumentItem {
   id: string;

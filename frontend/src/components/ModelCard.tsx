@@ -6,6 +6,7 @@ const ACCENT: Record<ModelProvider, { tag: string; bar: string; score: string }>
   gpt:    { tag: "bg-notion-green-bg text-notion-green",   bar: "#0f7b6c", score: "text-notion-green"   },
   claude: { tag: "bg-notion-orange-bg text-notion-orange", bar: "#c76b15", score: "text-notion-orange" },
   qwen:   { tag: "bg-notion-blue-bg text-notion-blue",     bar: "#2383e2", score: "text-notion-blue"   },
+  gemini: { tag: "bg-purple-100 text-purple-700",          bar: "#7c3aed", score: "text-purple-700"    },
 };
 
 interface Props {
