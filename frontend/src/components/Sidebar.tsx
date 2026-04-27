@@ -42,7 +42,10 @@ const MENUS: Menu[] = [
     id: "2",
     emoji: "❓",
     title: "퀴즈 관리",
-    children: [{ id: "2-1", emoji: "💯", title: "퀴즈 풀기", href: "/quiz" }],
+    children: [
+      { id: "2-1", emoji: "💯", title: "퀴즈 풀기", href: "/quiz" },
+      { id: "2-2", emoji: "📚", title: "퀴즈 내역" },
+    ],
   },
   { id: "3", emoji: "📄", title: "RAG Evaluation" },
   {
@@ -227,14 +230,15 @@ function MenuItem({
   onAction?: (action: string, href?: string) => void;
 }) {
   const hasChildren = !!menu.children?.length;
-  const isActive = !hasChildren && !!menu.href && pathname.startsWith(menu.href);
+  const isActive =
+    !hasChildren && !!menu.href && pathname.startsWith(menu.href);
   const [expanded, setExpanded] = useState(isActive);
   const [hovered, setHovered] = useState(false);
 
   // Auto-expand parent if a child is active
-  const hasActiveChild = hasChildren && menu.children!.some(
-    (c) => c.href && pathname.startsWith(c.href)
-  );
+  const hasActiveChild =
+    hasChildren &&
+    menu.children!.some((c) => c.href && pathname.startsWith(c.href));
   const [wasAutoExpanded] = useState(hasActiveChild);
 
   const handleClick = () => {
@@ -260,7 +264,9 @@ function MenuItem({
           <button
             onClick={() => setExpanded((v) => !v)}
             className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-notion text-notion-text-3 transition-all hover:bg-notion-divider hover:text-notion-text-2 ${
-              hovered || expanded || wasAutoExpanded ? "opacity-100" : "opacity-0"
+              hovered || expanded || wasAutoExpanded
+                ? "opacity-100"
+                : "opacity-0"
             }`}
           >
             <svg
