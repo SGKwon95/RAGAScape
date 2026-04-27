@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,7 +55,7 @@ class RAGService:
                 model_provider=provider,
                 model_name=response.model_name,
                 task_type=job.task_type,
-                output=json.loads(response.content) if response.content else {},
+                output=_parse_json(response.content),
                 latency_ms=response.latency_ms,
                 prompt_tokens=response.prompt_tokens,
                 completion_tokens=response.completion_tokens,
@@ -70,3 +71,28 @@ class RAGService:
         if job.task_type == "summary":
             return await llm.generate_summary(context, document_title=job.document.filename)
         return await llm.generate_quiz(context)
+
+
+def _parse_json(content: str | None) -> dict:
+    """Safely parse LLM JSON output.
+
+    Handles:
+    - None / empty / whitespace-only content → returns {}
+    - Markdown code fences (```json ... ```) → strips before parsing
+    - Invalid JSON → returns {}
+    """
+    if not content:
+        return {}
+    text = content.strip()
+    if not text:
+        return {}
+    # Strip markdown code fences that some models add
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text)
+        text = re.sub(r"```\s*$", "", text)
+        text = text.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        print(f"[RAG] JSON parse failed: {e} — raw content: {content[:200]!r}")
+        return {}
