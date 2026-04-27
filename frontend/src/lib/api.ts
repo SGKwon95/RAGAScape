@@ -20,6 +20,16 @@ export interface QuizOutput {
   total_questions: number;
 }
 
+export interface QuizHistoryItem {
+  job_id: string;
+  document_id: string;
+  filename: string;
+  model_provider: ModelProvider;
+  model_name: string;
+  total_questions: number;
+  created_at: string;
+}
+
 export interface DocumentItem {
   id: string;
   filename: string;
@@ -122,6 +132,9 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ job_id: jobId, ground_truth: groundTruth }),
     }),
+
+  listQuizHistory: (): Promise<QuizHistoryItem[]> =>
+    request("/api/v1/quiz/history"),
 
   /** Poll until status is 'completed' or 'failed', then resolve. */
   pollJob: (jobId: string, intervalMs = 2000): Promise<JobStatusResponse> =>

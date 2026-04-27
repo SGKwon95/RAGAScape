@@ -44,7 +44,7 @@ const MENUS: Menu[] = [
     title: "퀴즈 관리",
     children: [
       { id: "2-1", emoji: "💯", title: "퀴즈 풀기", href: "/quiz" },
-      { id: "2-2", emoji: "📚", title: "퀴즈 내역" },
+      { id: "2-2", emoji: "📋", title: "퀴즈 내역", href: "/quiz/history" },
     ],
   },
   { id: "3", emoji: "📄", title: "RAG Evaluation" },
