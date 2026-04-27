@@ -1,5 +1,6 @@
 from app.services.llm.base import BaseLLM, LLMResponse, TaskType
 from app.services.llm.claude_llm import ClaudeLLM
+from app.services.llm.gemini_llm import GeminiLLM
 from app.services.llm.openai_llm import OpenAILLM
 from app.services.llm.qwen_llm import QwenLLM
 
@@ -7,6 +8,7 @@ LLM_REGISTRY: dict[str, type[BaseLLM]] = {
     "gpt": OpenAILLM,
     "claude": ClaudeLLM,
     "qwen": QwenLLM,
+    "gemini": GeminiLLM,
 }
 
 
@@ -17,4 +19,4 @@ def get_llm(provider: str) -> BaseLLM:
     return cls()
 
 
-__all__ = ["BaseLLM", "LLMResponse", "TaskType", "OpenAILLM", "ClaudeLLM", "QwenLLM", "get_llm"]
+__all__ = ["BaseLLM", "LLMResponse", "TaskType", "OpenAILLM", "ClaudeLLM", "QwenLLM", "GeminiLLM", "get_llm"]

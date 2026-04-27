@@ -10,7 +10,12 @@ class Settings(BaseSettings):
     # LLM Keys
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
-    DASHSCOPE_API_KEY: str = ""
+
+    # Remote LM Studio (OpenAI-compatible, shared URL + auth token)
+    REMOTE_LM_BASE_URL: str = "http://localhost:1234/v1"
+    REMOTE_LM_API_KEY: str = ""   # LM Studio auth token
+    QWEN_MODEL: str = "qwen2.5-7b-instruct"
+    GEMINI_MODEL: str = "gemini-pro"
 
     # Redis / Celery
     REDIS_URL: str = "redis://localhost:6379/0"

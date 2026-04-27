@@ -6,11 +6,11 @@ from app.config import settings
 from app.services.llm.base import BaseLLM, LLMResponse
 
 
-class QwenLLM(BaseLLM):
-    provider_name = "qwen"
+class GeminiLLM(BaseLLM):
+    provider_name = "gemini"
 
     def __init__(self, model: str | None = None):
-        self.model = model or settings.QWEN_MODEL
+        self.model = model or settings.GEMINI_MODEL
         self.client = AsyncOpenAI(
             api_key=settings.REMOTE_LM_API_KEY or "none",
             base_url=settings.REMOTE_LM_BASE_URL,

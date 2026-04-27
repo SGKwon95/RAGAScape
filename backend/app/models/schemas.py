@@ -22,6 +22,7 @@ class ModelProvider(str, enum.Enum):
     GPT = "gpt"
     CLAUDE = "claude"
     QWEN = "qwen"
+    GEMINI = "gemini"
 
 
 class Document(Base):
